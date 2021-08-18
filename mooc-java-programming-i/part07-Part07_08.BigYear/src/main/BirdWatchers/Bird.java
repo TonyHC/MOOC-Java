@@ -1,41 +1,55 @@
 package BirdWatchers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Bird {
-    private String name;
-    private String latinName;
-    private ArrayList<String> observations;
+    private HashMap<String, String> birds;
+    private HashMap<String, ArrayList<String>> observations;
 
-    public Bird(String name, String latinName) {
-        this.name = name;
-        this.latinName = latinName;
-        this.observations = new ArrayList<>();
+    public Bird() {
+        this.birds = new HashMap<>();
+        this.observations = new HashMap<>();
     }
 
-    public String getName() {
-        return name;
+    public void addABird(String name, String latinName) {
+        birds.putIfAbsent(name, latinName);
     }
 
-    public void addObservation(String message) {
-        observations.add(message);
+    public void addObservation(String name, String message) {
+        observations.putIfAbsent(name, new ArrayList<>());
+        observations.get(name).add(message);
     }
 
-    public String showObservations() {
+    public String showObservations(String name) {
+        if (!observations.containsKey(name))
+            return "";
+
         StringBuilder listOfObservations = new StringBuilder();
+        int observations = this.observations.get(name).size();
 
-        for (int i = 0; i < observations.size(); i++) {
-            if (i == observations.size() - 1)
-                listOfObservations.append(i+1).append(": ").append(observations.get(i));
+        for (int i = 0; i < observations; i++) {
+            if (i == observations - 1)
+                listOfObservations.append(i+1).append(": ").append(this.observations.get(name).get(i));
             else
-                listOfObservations.append(i+1).append(": ").append(observations.get(i)).append("\n");
+                listOfObservations.append(i+1).append(": ").append(this.observations.get(name).get(i)).append("\n");
         }
 
         return listOfObservations.toString();
     }
 
-    @Override
-    public String toString() {
-        return name + " (" + latinName + "): " + observations.size() + " observations\n" + showObservations();
+    public void printBirdInformation(String name) {
+        if (!birds.containsKey(name))
+            return;
+
+        System.out.print((observations.get(name) == null) ? name + " (" + birds.get(name)
+                + "): 0" + " observations\n" :
+                name + " (" + birds.get(name) + "): " + observations.get(name).size() + " observations\n" + showObservations(name) + "\n");
+    }
+
+    public void printAllBirdInformation() {
+        for (String bird : birds.keySet()) {
+            printBirdInformation(bird);
+        }
     }
 }
