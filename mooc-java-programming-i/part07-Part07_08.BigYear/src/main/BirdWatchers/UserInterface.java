@@ -3,11 +3,11 @@ package BirdWatchers;
 import java.util.Scanner;
 
 public class UserInterface {
-    private BirdList birdsList;
+    private Bird bird;
     private Scanner scanner;
 
-    public UserInterface(BirdList birdsList, Scanner scanner) {
-        this.birdsList = birdsList;
+    public UserInterface(Bird bird, Scanner scanner) {
+        this.bird = bird;
         this.scanner = scanner;
     }
 
@@ -15,8 +15,8 @@ public class UserInterface {
         while (true) {
             System.out.print("Command: ");
 
-            String command = scanner.nextLine();
-            if (command.toLowerCase().equals("quit"))
+            String command = sanitizeString(scanner.nextLine());
+            if (command.toLowerCase().trim().equals("quit"))
                 break;
 
             birdCommands(command);
@@ -24,42 +24,38 @@ public class UserInterface {
     }
 
     public void birdCommands(String command) {
-        switch (command) {
-            case "Add Bird":
-                System.out.print("Name: ");
-                String name = scanner.nextLine();
-                System.out.print("Name in Latin: ");
-                String latinName = scanner.nextLine();
-                birdsList.addABird(new Bird(name,latinName));
-                break;
-            case "Add Observation":
-                System.out.print("Bird? ");
-                String bird = scanner.nextLine();
-                System.out.print("Observation: ");
-                String observation = scanner.nextLine();
+        String[] options = listOfBirdCommands().split("\n");
 
-                if (birdsList.findABird(bird) == null)
-                    System.out.println("Not a bird!");
-                else
-                    birdsList.findABird(bird).addObservation(observation);
-
-                break;
-            case "All Birds":
-                birdsList.printAllBirds();
-                break;
-            case "One Bird":
-                System.out.print("Bird? ");
-                bird = scanner.nextLine();
-
-                if (birdsList.findABird(bird) == null)
-                    System.out.println("Not a bird!");
-                else
-                    birdsList.printASpecificBird(bird);
-                break;
-            default:
-                System.out.print("Invalid Command");
+        if (command.equals(options[0])) {
+            System.out.print("Name: ");
+            String birdName = scanner.nextLine();
+            System.out.print("Name in Latin: ");
+            String latinName = scanner.nextLine();
+            bird.addABird(birdName, latinName);
+        } else if (command.equals(options[1])) {
+            System.out.print("Bird? ");
+            String birdName = scanner.nextLine();
+            System.out.print("Observation: ");
+            String observation = scanner.nextLine();
+            bird.addObservation(birdName,observation);
+        } else if (command.equals(options[2])) {
+            bird.printAllBirdInformation();
+        } else if (command.equals(options[3])) {
+            System.out.print("Bird? ");
+            String birdName = scanner.nextLine();
+            bird.printBirdInformation(birdName);
+        } else {
+            System.out.print("Invalid Command");
         }
 
         System.out.println();
+    }
+
+    public String listOfBirdCommands() {
+        return sanitizeString("Add Bird\nAdd Observation\nAll Birds\nOne Bird");
+    }
+
+    public String sanitizeString(String text) {
+        return text.toLowerCase().trim();
     }
 }
