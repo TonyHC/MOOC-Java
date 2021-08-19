@@ -1,55 +1,60 @@
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-
 public class Warehouse {
-    private Map<String, Integer> stockPrice;
-    private Map<String, Integer> productStock;
-    
+    private Map<String, Integer> productPrices;
+    private Map<String, Integer> productStocks;
+
     public Warehouse() {
-        this.stockPrice = new HashMap<>();
-        this.productStock = new HashMap<>();
+        this.productPrices = new HashMap<>();
+        this.productStocks = new HashMap<>();
     }
-    
+
     public void addProduct(String product, int price, int stock) {
-        this.stockPrice.put(product, price);
-        this.productStock.put(product, stock);
+        this.productPrices.putIfAbsent(product,price);
+        this.productStocks.putIfAbsent(product,stock);
     }
-    
+
     public int price(String product) {
-        if(this.stockPrice.get(product) == null)
+        if (!this.productPrices.containsKey(product))
             return -99;
-        
-        return this.stockPrice.get(product);
+
+        return this.productPrices.get(product);
     }
-    
+
     public int stock(String product) {
-        if(this.productStock.get(product) == null)
+        if (!this.productStocks.containsKey(product))
             return 0;
-        
-        return this.productStock.get(product);
+
+        return this.productStocks.get(product);
     }
-    
+
     public boolean take(String product) {
-        int currentStock = stock(product);
-        if(currentStock > 0) {
-            currentStock -= 1;
-            this.productStock.put(product, currentStock);
-            return true;
+        if (!this.productStocks.containsKey(product))
+            return false;
+
+        int currentStock = this.productStocks.get(product);
+        if (currentStock - 1 >= 0) {
+            this.productStocks.put(product,this.productStocks.get(product) - 1);
         }
-        
-        return false;
+
+        return currentStock >= 1;
     }
-    
+
     public Set<String> products() {
+        // Set<String> products = new HashSet<>(this.productStocks.keySet());
         Set<String> products = new HashSet<>();
-        for(String productName : this.productStock.keySet()) {
-            products.add(productName);
+        for (String key : this.productStocks.keySet()) {
+            products.add(key);
         }
-        
         return products;
+    }
+
+    public void printWarehouse() {
+        for (String key : products()) {
+            System.out.println(key + " $" + this.productPrices.get(key) + " [" + this.productStocks.get(key) + "]");
+        }
     }
 }
