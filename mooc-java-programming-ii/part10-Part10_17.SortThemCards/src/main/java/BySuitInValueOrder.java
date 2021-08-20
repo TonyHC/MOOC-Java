@@ -1,6 +1,4 @@
-
 import java.util.Comparator;
-
 
 public class BySuitInValueOrder implements Comparator<Card>{
     @Override
